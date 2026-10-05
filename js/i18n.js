@@ -1,0 +1,431 @@
+// ==========================================================
+// js/i18n.js —— 中韩双语语言包（小组公共文件）
+// 使用方式：
+//   HTML：给需要翻译的元素加 data-i18n="key"（文本）/ data-i18n-ph="key"（占位符）
+//   JS：  import { t } from "./i18n.js";  t("key") 或 t("key", {name: "xx"})
+// 切换：点击语言按钮（data-lang-btn）后保存选择并刷新页面
+// ==========================================================
+
+const LANG_KEY = "campus_lang";
+export const lang = localStorage.getItem(LANG_KEY) || "zh";
+
+const dict = {
+  zh: {
+    // ---- 公共 ----
+    "app.name": "🏫 智慧校园活动管理",
+    "app.name.short": "智慧校园活动管理",
+    "nav.login": "登录",
+    "nav.events": "活动列表",
+    "nav.publish": "发布活动",
+    "nav.qr": "QR入场",
+    "nav.records": "我的记录",
+    "nav.accounts": "账号管理",
+    "nav.password": "修改密码",
+    "role.admin": "管理员",
+    "role.student": "学生",
+    "action.logout": "退出登录",
+    "action.back": "返回活动列表",
+    "action.viewDetail": "查看详情",
+    "action.viewQr": "查看QR",
+    "action.confirmEntry": "确认入场",
+    "action.processing": "处理中…",
+    "action.refresh": "刷新",
+    "common.loading": "正在加载…",
+    "common.error": "加载失败：",
+    "common.noAccess": "无权访问该页面",
+    "status.applied": "已报名",
+    "status.cancelled": "已取消",
+    "status.notEntered": "未入场",
+    "status.entered": "已入场",
+    "col.studentName": "学生姓名",
+    "col.studentId": "学号",
+    "col.applyStatus": "报名状态",
+    "col.entryStatus": "入场状态",
+    "col.action": "操作",
+
+    // ---- 登录 ----
+    "login.title.tag": "登录 · 智慧校园活动管理系统",
+    "login.sub": "基于 QR 二维码的校园活动报名与入场管理系统",
+    "login.asStudent": "学生登录",
+    "login.asAdmin": "管理员登录",
+    "login.userId": "用户 ID（学号 / 工号）",
+    "login.userIdPh": "请输入用户 ID",
+    "login.password": "密码",
+    "login.passwordPh": "请输入密码",
+    "login.submit": "登 录",
+    "login.logging": "登录中…",
+    "login.emptyErr": "请输入用户 ID 和密码",
+    "login.wrongErr": "用户 ID 或密码错误，请重试",
+    "login.roleErr": "该账号是{role}账号，请切换登录角色",
+    "login.fail": "登录失败：",
+    "login.demoTip": "本地演示模式（未配置 Firebase）<br>演示账号 —— 管理员：A001 / admin123，学生：S001 / 123456",
+
+    // ---- 活动列表 ----
+    "events.title.tag": "活动列表 · 智慧校园活动管理系统",
+    "events.title": "活动列表",
+    "events.sub": "点击活动卡片查看详情并报名（管理员可发布新活动）",
+    "events.loading": "正在加载活动数据…",
+    "events.empty": "暂无活动，请等待管理员发布",
+    "events.badge.ended": "已结束",
+    "events.badge.full": "已满员",
+    "events.badge.open": "报名中",
+    "events.seats": "👥 已报名 {a} / {m}（剩余 {r}）",
+    "events.noIntro": "暂无简介",
+    "events.demoBanner": "当前为本地演示模式，数据保存在浏览器 localStorage 中；在 js/firebase.js 中填入 Firebase 配置即可连接云端 Firestore。",
+
+    // ---- 发布活动 ----
+    "add.title.tag": "发布活动 · 智慧校园活动管理系统",
+    "add.title": "发布新活动",
+    "add.sub": "填写活动信息，保存后立即显示在活动列表中",
+    "add.name": "活动名称 *",
+    "add.namePh": "例如：校园歌手大赛",
+    "add.date": "日期 *",
+    "add.time": "时间 *",
+    "add.place": "地点 *",
+    "add.placePh": "例如：大学生活动中心",
+    "add.maxPeople": "人数上限 *",
+    "add.desc": "活动简介",
+    "add.descPh": "介绍活动内容、参与方式、注意事项等（选填）",
+    "add.submit": "发布活动",
+    "add.submitting": "发布中…",
+    "add.maxErr": "人数上限必须大于 0",
+    "add.fail": "发布失败：",
+    "add.success": "活动「{name}」发布成功！",
+
+    // ---- 活动详情/报名 ----
+    "detail.title.tag": "活动详情 · 智慧校园活动管理系统",
+    "detail.loading": "正在加载活动详情…",
+    "detail.missingId": "缺少活动编号，请从活动列表进入",
+    "detail.notFound": "活动不存在或已被删除",
+    "detail.backList": "← 返回活动列表",
+    "detail.noIntro": "暂无简介",
+    "detail.seats": "👥 已报名 {a} / {m} · 剩余 {r}",
+    "detail.appliedMsg": "✅ 你已报名「{name}」，请在活动当天出示二维码入场。",
+    "detail.viewQr": "查看我的 QR 码",
+    "detail.myRecords": "我的参加记录",
+    "detail.full": "很遗憾，该活动名额已满。",
+    "detail.applyTip": "点击下方按钮立即报名，报名后可随时在“我的参加记录”中取消。",
+    "detail.apply": "立即报名（剩余 {n} 个名额）",
+    "detail.applying": "报名中…",
+    "detail.applyOk": "报名成功！",
+    "detail.applyFail": "报名失败：",
+    "detail.applicants": "报名情况",
+    "detail.noApplicants": "暂无学生报名",
+    "detail.goQr": "前往 QR 入场确认",
+
+    // ---- QR 入场 ----
+    "qr.title.tag": "QR 入场确认 · 智慧校园活动管理系统",
+    "qr.title": "QR 二维码 · 入场确认",
+    "qr.sub": "学生出示二维码，管理员扫码/核对后确认入场",
+    "qr.subStudent": "向管理员出示以下二维码完成入场确认",
+    "qr.subAdmin": "选择活动，核对学生的 QR 信息后点击“确认入场”",
+    "qr.loading": "正在加载数据…",
+    "qr.noApply": "你还没有报名任何活动",
+    "qr.goEvents": "去活动列表看看 →",
+    "qr.selectEvent": "选择活动：",
+    "qr.noEvents": "暂无活动，请先发布",
+    "qr.noApps": "该活动暂无学生报名",
+    "qr.confirmMsg": "确认「{name}（{id}）」入场？",
+    "qr.enteredOk": "已确认入场！",
+    "qr.qrFail": "二维码图片生成失败（离线环境），请人工核对信息：",
+
+    // ---- 我的记录 ----
+    "hist.title.tag": "我的参加记录 · 智慧校园活动管理系统",
+    "hist.title": "我的参加记录",
+    "hist.sub": "查看报名与参与状态，未入场的活动可以取消报名",
+    "hist.loading": "正在查询记录…",
+    "hist.empty": "暂无参加记录",
+    "hist.deleted": "（活动已删除）",
+    "hist.col.eventName": "活动名称",
+    "hist.col.datetime": "日期时间",
+    "hist.col.place": "地点",
+    "hist.col.applyTime": "报名时间",
+    "hist.cancel": "取消报名",
+    "hist.cancelling": "取消中…",
+    "hist.cancelMsg": "确定取消报名「{name}」吗？",
+    "hist.cancelOk": "已取消报名",
+    "hist.fail": "操作失败：",
+    "hist.queryFail": "查询失败：",
+
+    // ---- 账号管理 ----
+    "users.title.tag": "账号管理 · 智慧校园活动管理系统",
+    "users.title": "学生账号管理",
+    "users.sub": "手动录入学生账号并设置初始密码；学生首次登录时会被要求修改为自己的密码",
+    "users.addTitle": "➕ 录入学生账号",
+    "users.id": "学号 *",
+    "users.idPh": "例如：S003",
+    "users.name": "姓名 *",
+    "users.namePh": "例如：赵同学",
+    "users.initPwd": "初始密码 *",
+    "users.submit": "录入账号",
+    "users.submitting": "录入中…",
+    "users.pwdLenErr": "初始密码至少需要 6 位",
+    "users.exists": "学号 {id} 已存在，请勿重复录入",
+    "users.success": "学生「{name}（{id}）」录入成功，初始密码：{pwd}",
+    "users.listTitle": "👤 已有账号",
+    "users.col.role": "角色",
+    "users.col.pwdStatus": "密码状态",
+    "users.pwdNotChanged": "初始密码未修改",
+    "users.pwdChanged": "已修改密码",
+    "users.reset": "重置密码",
+    "users.resetMsg": "为「{name}（{id}）」设置新的初始密码（至少 6 位）：",
+    "users.resetOk": "已重置「{name}」的密码，该学生下次登录需重新修改密码。",
+    "users.resetFail": "重置失败：",
+    "users.addFail": "录入失败：",
+    "users.empty": "暂无账号",
+
+    // ---- 修改密码 ----
+    "pwd.title.tag": "修改密码 · 智慧校园活动管理系统",
+    "pwd.title": "🔐 修改初始密码",
+    "pwd.sub": "首次登录请先修改管理员为你设置的初始密码，之后再进入系统。",
+    "pwd.subUser": "{name}（{id}），首次登录请先修改初始密码后再使用系统。",
+    "pwd.old": "原密码（初始密码）",
+    "pwd.oldPh": "请输入当前密码",
+    "pwd.new": "新密码",
+    "pwd.newPh": "至少 6 位",
+    "pwd.confirm": "确认新密码",
+    "pwd.confirmPh": "再次输入新密码",
+    "pwd.submit": "确认修改",
+    "pwd.submitting": "提交中…",
+    "pwd.lenErr": "新密码至少需要 6 位",
+    "pwd.mismatchErr": "两次输入的新密码不一致",
+    "pwd.sameErr": "新密码不能与原密码相同",
+    "pwd.oldErr": "原密码错误，请重试",
+    "pwd.noUser": "未找到用户数据，请联系管理员",
+    "pwd.fail": "修改失败：",
+    "pwd.success": "密码修改成功，欢迎使用！",
+    "pwd.relogin": "如非本人账号，请退出重新登录"
+  },
+
+  ko: {
+    // ---- 공통 ----
+    "app.name": "🏫 스마트 캠퍼스 행사 관리",
+    "app.name.short": "스마트 캠퍼스 행사 관리",
+    "nav.login": "로그인",
+    "nav.events": "행사 목록",
+    "nav.publish": "행사 등록",
+    "nav.qr": "QR 입장",
+    "nav.records": "내 기록",
+    "nav.accounts": "계정 관리",
+    "nav.password": "비밀번호 변경",
+    "role.admin": "관리자",
+    "role.student": "학생",
+    "action.logout": "로그아웃",
+    "action.back": "행사 목록으로",
+    "action.viewDetail": "자세히 보기",
+    "action.viewQr": "QR 보기",
+    "action.confirmEntry": "입장 확인",
+    "action.processing": "처리 중…",
+    "action.refresh": "새로고침",
+    "common.loading": "불러오는 중…",
+    "common.error": "불러오기 실패: ",
+    "common.noAccess": "접근 권한이 없습니다",
+    "status.applied": "신청 완료",
+    "status.cancelled": "취소됨",
+    "status.notEntered": "미입장",
+    "status.entered": "입장 완료",
+    "col.studentName": "학생 이름",
+    "col.studentId": "학번",
+    "col.applyStatus": "신청 상태",
+    "col.entryStatus": "입장 상태",
+    "col.action": "작업",
+
+    // ---- 로그인 ----
+    "login.title.tag": "로그인 · 스마트 캠퍼스 행사 관리",
+    "login.sub": "QR코드 기반 캠퍼스 행사 신청 및 입장 관리 시스템",
+    "login.asStudent": "학생 로그인",
+    "login.asAdmin": "관리자 로그인",
+    "login.userId": "사용자 ID (학번 / 사번)",
+    "login.userIdPh": "사용자 ID를 입력하세요",
+    "login.password": "비밀번호",
+    "login.passwordPh": "비밀번호를 입력하세요",
+    "login.submit": "로그인",
+    "login.logging": "로그인 중…",
+    "login.emptyErr": "ID와 비밀번호를 모두 입력하세요",
+    "login.wrongErr": "ID 또는 비밀번호가 올바르지 않습니다",
+    "login.roleErr": "이 계정은 {role} 계정입니다. 로그인 역할을 변경하세요",
+    "login.fail": "로그인 실패: ",
+    "login.demoTip": "로컬 데모 모드(Firebase 미설정)<br>데모 계정 —— 관리자: A001 / admin123, 학생: S001 / 123456",
+
+    // ---- 행사 목록 ----
+    "events.title.tag": "행사 목록 · 스마트 캠퍼스 행사 관리",
+    "events.title": "행사 목록",
+    "events.sub": "카드를 눌러 자세히 보고 신청하세요 (관리자는 행사 등록 가능)",
+    "events.loading": "행사 데이터를 불러오는 중…",
+    "events.empty": "등록된 행사가 없습니다. 관리자의 등록을 기다려 주세요",
+    "events.badge.ended": "종료",
+    "events.badge.full": "정원 마감",
+    "events.badge.open": "신청 가능",
+    "events.seats": "👥 신청 {a} / {m} (남음 {r})",
+    "events.noIntro": "소개 없음",
+    "events.demoBanner": "현재 로컬 데모 모드입니다. 데이터는 브라우저 localStorage에 저장되며, js/firebase.js에 Firebase 설정을 입력하면 클라우드 Firestore에 연결됩니다.",
+
+    // ---- 행사 등록 ----
+    "add.title.tag": "행사 등록 · 스마트 캠퍼스 행사 관리",
+    "add.title": "새 행사 등록",
+    "add.sub": "행사 정보를 입력하면 목록에 바로 표시됩니다",
+    "add.name": "행사 이름 *",
+    "add.namePh": "예: 캠퍼스 가요제",
+    "add.date": "날짜 *",
+    "add.time": "시간 *",
+    "add.place": "장소 *",
+    "add.placePh": "예: 대학생 회관",
+    "add.maxPeople": "인원 제한 *",
+    "add.desc": "행사 소개",
+    "add.descPh": "행사 내용, 참여 방법, 유의 사항 등 입력 (선택)",
+    "add.submit": "행사 등록",
+    "add.submitting": "등록 중…",
+    "add.maxErr": "인원 제한은 1 이상이어야 합니다",
+    "add.fail": "등록 실패: ",
+    "add.success": "행사 \"{name}\" 등록 완료!",
+
+    // ---- 행사 상세/신청 ----
+    "detail.title.tag": "행사 상세 · 스마트 캠퍼스 행사 관리",
+    "detail.loading": "상세 정보를 불러오는 중…",
+    "detail.missingId": "행사 번호가 없습니다. 목록에서 접속해 주세요",
+    "detail.notFound": "행사가 없거나 삭제되었습니다",
+    "detail.backList": "← 행사 목록으로",
+    "detail.noIntro": "소개 없음",
+    "detail.seats": "👥 신청 {a} / {m} · 남음 {r}",
+    "detail.appliedMsg": "✅ \"{name}\" 신청 완료. 당일 QR코드를 제시해 입장해 주세요.",
+    "detail.viewQr": "내 QR코드 보기",
+    "detail.myRecords": "내 참여 기록",
+    "detail.full": "죄송합니다. 정원이 마감되었습니다.",
+    "detail.applyTip": "아래 버튼으로 신청하세요. 신청 후 \"내 기록\"에서 언제든 취소할 수 있습니다.",
+    "detail.apply": "신청하기 (남은 인원 {n}명)",
+    "detail.applying": "신청 중…",
+    "detail.applyOk": "신청 완료!",
+    "detail.applyFail": "신청 실패: ",
+    "detail.applicants": "신청 현황",
+    "detail.noApplicants": "신청한 학생이 없습니다",
+    "detail.goQr": "QR 입장 확인으로 이동",
+
+    // ---- QR 입장 ----
+    "qr.title.tag": "QR 입장 확인 · 스마트 캠퍼스 행사 관리",
+    "qr.title": "QR코드 · 입장 확인",
+    "qr.sub": "학생이 QR코드를 제시하면 관리자가 확인 후 입장을 처리합니다",
+    "qr.subStudent": "아래 QR코드를 관리자에게 보여주세요",
+    "qr.subAdmin": "행사를 선택하고 학생의 QR 정보를 확인한 후 \"입장 확인\"을 누르세요",
+    "qr.loading": "데이터를 불러오는 중…",
+    "qr.noApply": "신청한 행사가 없습니다",
+    "qr.goEvents": "행사 목록으로 이동 →",
+    "qr.selectEvent": "행사 선택:",
+    "qr.noEvents": "행사가 없습니다. 먼저 등록해 주세요",
+    "qr.noApps": "신청한 학생이 없습니다",
+    "qr.confirmMsg": "\"{name}({id})\" 입장을 확인할까요?",
+    "qr.enteredOk": "입장 확인 완료!",
+    "qr.qrFail": "QR 이미지 생성 실패(오프라인). 정보를 직접 확인하세요: ",
+
+    // ---- 내 기록 ----
+    "hist.title.tag": "내 참여 기록 · 스마트 캠퍼스 행사 관리",
+    "hist.title": "내 참여 기록",
+    "hist.sub": "신청 및 참여 상태를 확인하세요. 미입장 행사는 취소할 수 있습니다",
+    "hist.loading": "기록을 조회하는 중…",
+    "hist.empty": "참여 기록이 없습니다",
+    "hist.deleted": "(삭제된 행사)",
+    "hist.col.eventName": "행사 이름",
+    "hist.col.datetime": "날짜·시간",
+    "hist.col.place": "장소",
+    "hist.col.applyTime": "신청 시간",
+    "hist.cancel": "신청 취소",
+    "hist.cancelling": "취소 중…",
+    "hist.cancelMsg": "\"{name}\" 신청을 취소할까요?",
+    "hist.cancelOk": "신청이 취소되었습니다",
+    "hist.fail": "처리 실패: ",
+    "hist.queryFail": "조회 실패: ",
+
+    // ---- 계정 관리 ----
+    "users.title.tag": "계정 관리 · 스마트 캠퍼스 행사 관리",
+    "users.title": "학생 계정 관리",
+    "users.sub": "학생 계정을 직접 등록하고 초기 비밀번호를 설정하세요. 학생은 첫 로그인 시 비밀번호 변경이 필요합니다",
+    "users.addTitle": "➕ 학생 계정 등록",
+    "users.id": "학번 *",
+    "users.idPh": "예: S003",
+    "users.name": "이름 *",
+    "users.namePh": "예: 김학생",
+    "users.initPwd": "초기 비밀번호 *",
+    "users.submit": "계정 등록",
+    "users.submitting": "등록 중…",
+    "users.pwdLenErr": "초기 비밀번호는 6자 이상이어야 합니다",
+    "users.exists": "학번 {id}이(가) 이미 존재합니다",
+    "users.success": "학생 \"{name}({id})\" 등록 완료. 초기 비밀번호: {pwd}",
+    "users.listTitle": "👤 계정 목록",
+    "users.col.role": "역할",
+    "users.col.pwdStatus": "비밀번호 상태",
+    "users.pwdNotChanged": "초기 비밀번호 미변경",
+    "users.pwdChanged": "비밀번호 변경됨",
+    "users.reset": "비밀번호 초기화",
+    "users.resetMsg": "\"{name}({id})\"의 새 초기 비밀번호를 입력하세요 (6자 이상):",
+    "users.resetOk": "\"{name}\"의 비밀번호가 초기화되었습니다. 다음 로그인 시 다시 변경해야 합니다.",
+    "users.resetFail": "초기화 실패: ",
+    "users.addFail": "등록 실패: ",
+    "users.empty": "계정이 없습니다",
+
+    // ---- 비밀번호 변경 ----
+    "pwd.title.tag": "비밀번호 변경 · 스마트 캠퍼스 행사 관리",
+    "pwd.title": "🔐 초기 비밀번호 변경",
+    "pwd.sub": "첫 로그인입니다. 관리자가 설정한 초기 비밀번호를 변경한 후 시스템을 이용하세요.",
+    "pwd.subUser": "{name}({id}) 님, 첫 로그인이므로 초기 비밀번호를 먼저 변경해 주세요.",
+    "pwd.old": "현재 비밀번호 (초기 비밀번호)",
+    "pwd.oldPh": "현재 비밀번호를 입력하세요",
+    "pwd.new": "새 비밀번호",
+    "pwd.newPh": "6자 이상",
+    "pwd.confirm": "새 비밀번호 확인",
+    "pwd.confirmPh": "새 비밀번호를 다시 입력하세요",
+    "pwd.submit": "변경 확인",
+    "pwd.submitting": "처리 중…",
+    "pwd.lenErr": "새 비밀번호는 6자 이상이어야 합니다",
+    "pwd.mismatchErr": "새 비밀번호가 일치하지 않습니다",
+    "pwd.sameErr": "새 비밀번호는 현재 비밀번호와 달라야 합니다",
+    "pwd.oldErr": "현재 비밀번호가 올바르지 않습니다",
+    "pwd.noUser": "사용자 데이터를 찾을 수 없습니다. 관리자에게 문의하세요",
+    "pwd.fail": "변경 실패: ",
+    "pwd.success": "비밀번호가 변경되었습니다. 환영합니다!",
+    "pwd.relogin": "본인이 아니라면 로그아웃 후 다시 로그인하세요"
+  }
+};
+
+// 翻译函数：t("key") 或 t("key", {name: "값"})
+export function t(key, params) {
+  let s = (dict[lang] && dict[lang][key]) ?? dict.zh[key] ?? key;
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      s = s.split("{" + k + "}").join(v);
+    }
+  }
+  return s;
+}
+
+// 翻译静态 HTML（data-i18n / data-i18n-ph）
+export function applyI18n() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach((el) => {
+    el.placeholder = t(el.dataset.i18nPh);
+  });
+  document.documentElement.lang = lang === "ko" ? "ko" : "zh-CN";
+}
+
+// 语言切换按钮（中 / 한）
+export function bindLangSwitch() {
+  document.querySelectorAll("[data-lang-btn]").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.langBtn === lang);
+    btn.onclick = () => {
+      localStorage.setItem(LANG_KEY, btn.dataset.langBtn);
+      location.reload();
+    };
+  });
+}
+
+// 语言切换按钮的公共 HTML
+export function langSwitchHTML(extraClass = "") {
+  return `<div class="lang-switch ${extraClass}">
+    <button type="button" data-lang-btn="zh">中</button>
+    <button type="button" data-lang-btn="ko">한</button>
+  </div>`;
+}
+
+// 页面加载后自动翻译静态文本（本文件以 module 方式在页面底部加载）
+applyI18n();
+bindLangSwitch();

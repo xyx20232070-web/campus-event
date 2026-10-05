@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login.title.tag</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+  <!-- 中韩语言切换 -->
+  <div class="login-lang">
+    <div class="lang-switch on-light">
+      <button type="button" data-lang-btn="zh">中</button>
+      <button type="button" data-lang-btn="ko">한</button>
+    </div>
+  </div>
+
+  <div class="login-card card">
+    <h1 class="login-title" data-i18n="app.name"></h1>
+    <p class="login-sub" data-i18n="login.sub"></p>
+
+    <div class="role-switch" id="roleSwitch">
+      <button type="button" class="role-btn active" data-role="student" data-i18n="login.asStudent"></button>
+      <button type="button" class="role-btn" data-role="admin" data-i18n="login.asAdmin"></button>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="userId" data-i18n="login.userId"></label>
+        <input id="userId" data-i18n-ph="login.userIdPh" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="password" data-i18n="login.password"></label>
+        <input id="password" type="password" data-i18n-ph="login.passwordPh" required autocomplete="current-password">
+      </div>
+      <p class="form-error" id="loginError"></p>
+      <button type="submit" class="btn btn-primary btn-block" id="loginBtn" data-i18n="login.submit"></button>
+    </form>
+
+    <p class="login-tip" id="loginTip"></p>
+  </div>
+
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>detail.title.tag</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="events.html" data-i18n="app.name"></a>
+      <nav id="nav" class="nav"></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="loading" id="loading" data-i18n="detail.loading"></div>
+
+    <!-- 活动详情卡片（由 detail.js 填充） -->
+    <div class="card" id="eventCard" style="display:none">
+      <h1 class="page-title" id="eventName"></h1>
+      <div id="eventMeta"></div>
+      <hr style="border:none;border-top:1px solid #e9ecef;margin:14px 0">
+      <p id="eventDesc"></p>
+
+      <!-- 学生：报名区域 -->
+      <div id="studentArea" style="margin-top:16px"></div>
+
+      <!-- 管理员：报名情况列表 -->
+      <div id="adminArea" style="display:none;margin-top:16px">
+        <h3 style="margin-bottom:8px" id="applicantsTitle"></h3>
+        <div class="table-wrap" id="applicantTable"></div>
+      </div>
+
+      <div class="actions mt">
+        <a class="btn btn-outline" href="events.html" data-i18n="detail.backList"></a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/detail.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>qr.title.tag</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="events.html" data-i18n="app.name"></a>
+      <nav id="nav" class="nav"></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="page-title" data-i18n="qr.title"></h1>
+    <p class="page-sub" id="pageSub"></p>
+
+    <div class="loading" id="loading"></div>
+
+    <!-- 学生：我的 QR 码 -->
+    <div class="card" id="studentQrCard" style="display:none">
+      <div class="qr-box" id="studentQrBox"></div>
+      <div class="actions" style="justify-content:center" id="studentQrActions"></div>
+    </div>
+
+    <!-- 管理员：选择活动 → 报名列表 → 确认入场 -->
+    <div class="card" id="adminCard" style="display:none">
+      <div class="toolbar">
+        <label for="eventSelect" id="eventSelectLabel"></label>
+        <select id="eventSelect"></select>
+        <button class="btn btn-outline btn-sm" id="refreshBtn" data-i18n="action.refresh"></button>
+      </div>
+      <div class="table-wrap" id="adminTable"></div>
+      <div class="qr-box" id="adminQrBox" style="display:none"></div>
+    </div>
+  </main>
+
+  <script type="module" src="js/qr.js"></script>
+</body>
+</html>
