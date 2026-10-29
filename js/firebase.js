@@ -217,17 +217,61 @@ export function initNav(active) {
   const add = (key, href, text) =>
     links.push(`<a class="nav-link ${key === active ? "active" : ""}" href="${href}">${text}</a>`);
   add("events", "events.html", t("nav.events"));
-  if (u.role === "admin") add("add", "add-event.html", t("nav.publish"));
   add("qr", "qr.html", t("nav.qr"));
-  if (u.role === "student") add("history", "history.html", t("nav.records"));
-  if (u.role === "admin") add("users", "users.html", t("nav.accounts"));
-  if (u.role === "student") add("pwd", "change-password.html", t("nav.password"));
+
+  // 右上角纵向排列：返回键，下方为功能菜单（管理员）或退出登录（学生）
+  let rightCol;
+  if (u.role === "admin") {
+    rightCol = `
+      <div class="nav-right-col">
+        <button class="btn btn-outline btn-sm back-btn" id="backBtn">${t("action.backPrev")}</button>
+        ${langSwitchHTML()}
+        <div class="nav-menu">
+          <button type="button" class="nav-menu-btn" id="menuBtn">${t("nav.menu")} ▾</button>
+          <div class="nav-menu-list" id="menuList">
+            <a href="add-event.html">${t("nav.publish")}</a>
+            <a href="users.html">${t("nav.accounts")}</a>
+            <button type="button" id="btnLogout">${t("action.logout")}</button>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    rightCol = `
+      <div class="nav-right-col">
+        <button class="btn btn-outline btn-sm back-btn" id="backBtn">${t("action.backPrev")}</button>
+        ${langSwitchHTML()}
+        <button class="btn btn-outline btn-sm" id="btnLogout">${t("action.logout")}</button>
+      </div>`;
+  }
+  // 学生的专属入口仍以链接形式展示
+  if (u.role === "student") {
+    add("history", "history.html", t("nav.records"));
+    add("pwd", "change-password.html", t("nav.password"));
+  }
+
   nav.innerHTML =
     links.join("") +
     `<span class="nav-user">${escHtml(u.name)}（${u.role === "admin" ? t("role.admin") : t("role.student")}）</span>` +
-    langSwitchHTML() +
-    `<button class="btn btn-outline btn-sm" id="btnLogout">${t("action.logout")}</button>`;
+    rightCol;
+
+  // 返回上一页
+  document.getElementById("backBtn").addEventListener("click", () => {
+    if (history.length > 1) history.back();
+    else location.href = "events.html";
+  });
+  // 退出登录
   document.getElementById("btnLogout").addEventListener("click", logout);
+  // 管理员下拉菜单
+  const menuBtn = document.getElementById("menuBtn");
+  if (menuBtn) {
+    const list = document.getElementById("menuList");
+    menuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      list.classList.toggle("show");
+    });
+    document.addEventListener("click", () => list.classList.remove("show"));
+    list.addEventListener("click", (e) => e.stopPropagation());
+  }
   bindLangSwitch();
 }
 function escHtml(s) {

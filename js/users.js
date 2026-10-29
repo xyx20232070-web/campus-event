@@ -15,6 +15,11 @@ const user = requireRole("admin"); // 仅管理员可访问
 initNav("users");
 document.getElementById("userLoading").textContent = t("common.loading");
 
+// 从菜单“注册管理员”进入时（users.html?role=admin）默认选中管理员角色
+if (new URLSearchParams(location.search).get("role") === "admin") {
+  document.getElementById("newUserRole").value = "admin";
+}
+
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -42,6 +47,7 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
   const userId = document.getElementById("newUserId").value.trim();
   const name = document.getElementById("newUserName").value.trim();
   const password = document.getElementById("initPassword").value;
+  const role = document.getElementById("newUserRole").value; // student / admin
 
   if (password.length < 6) {
     errEl.textContent = t("users.pwdLenErr");
@@ -58,13 +64,14 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
     if (!snap.empty) {
       errEl.textContent = t("users.exists", { id: userId });
     } else {
-      // 新增 users 文档：mustChangePassword = true 表示首次登录需改密
+      // 新增 users 文档：
+      // 学生账号强制首次登录改密；管理员账号无需强制改密
       await addDoc(collection(db, "users"), {
         userId: userId,
         name: name,
-        role: "student",
+        role: role,
         password: password,
-        mustChangePassword: true,
+        mustChangePassword: role === "student",
         createdBy: user.userId,
         createdAt: new Date().toISOString()
       });

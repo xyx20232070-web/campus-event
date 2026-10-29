@@ -273,6 +273,89 @@ tr:hover td { background: #f8f9fa; }
   z-index: 20;
 }
 
+/* ---------- 右上角返回键 + 下拉功能菜单 ---------- */
+.nav-right-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 6px 0;
+}
+/* 返回键：深紫色背景 */
+.back-btn,
+.btn.btn-outline.back-btn {
+  white-space: nowrap;
+  background: #5f3dc4;
+  border-color: #5f3dc4;
+  color: #fff;
+  font-weight: 600;
+}
+.back-btn:hover,
+.btn.btn-outline.back-btn:hover { background: #4c2f9e; border-color: #4c2f9e; color: #fff; }
+
+.nav-menu { position: relative; }
+/* 功能菜单按钮：深紫色背景 */
+.nav-menu-btn {
+  border: 1.5px solid #5f3dc4;
+  background: #5f3dc4;
+  color: #fff;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.nav-menu-btn:hover { background: #4c2f9e; border-color: #4c2f9e; }
+.nav-menu-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(30, 40, 90, 0.18);
+  min-width: 160px;
+  flex-direction: column;
+  overflow: hidden;
+  display: none;
+  z-index: 30;
+}
+.nav-menu-list.show { display: flex; }
+.nav-menu-list a,
+.nav-menu-list button {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #343a40;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+}
+.nav-menu-list a:hover,
+.nav-menu-list button:hover { background: #f1f3f5; }
+.nav-menu-list button { border-top: 1px solid #e9ecef; color: var(--danger); }
+
+/* ---------- 二维码扫描 ---------- */
+.scanner-box { text-align: center; }
+.scanner-box video {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 10px;
+  background: #000;
+}
+.scanner-tip { font-size: 13px; color: var(--gray); margin: 8px 0 12px; }
+.scan-result {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  font-size: 14px;
+  text-align: left;
+}
+
 /* ---------- 移动端 ---------- */
 @media (max-width: 600px) {
   .form-row { flex-direction: column; gap: 0; }

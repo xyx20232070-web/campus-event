@@ -35,6 +35,13 @@
             <label for="initPassword" data-i18n="users.initPwd"></label>
             <input id="initPassword" value="123456" required minlength="6" maxlength="20">
           </div>
+          <div class="form-group">
+            <label for="newUserRole" data-i18n="users.col.role"></label>
+            <select id="newUserRole">
+              <option value="student" data-i18n="role.student"></option>
+              <option value="admin" data-i18n="role.admin"></option>
+            </select>
+          </div>
         </div>
         <p class="form-error" id="addUserError"></p>
         <p class="form-success" id="addUserSuccess"></p>

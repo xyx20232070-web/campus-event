@@ -117,6 +117,138 @@ async function renderStudent() {
   show(current);
 }
 
+// ==========================================================
+// 管理员：扫描入场码（摄像头识别 + 手动输入兜底）
+// ==========================================================
+let scanStream = null;
+let scanning = false;
+let refreshTable = () => {}; // 由管理员表格刷新函数赋值
+
+async function startScan() {
+  const video = document.getElementById("scanVideo");
+  const resultBox = document.getElementById("scanResult");
+  if (typeof window.jsQR === "undefined") {
+    alert(t("qr.scanNoLib"));
+    return;
+  }
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" }
+    });
+    video.srcObject = scanStream;
+    video.style.display = "block";
+    await video.play();
+    scanning = true;
+    resultBox.innerHTML = "";
+    document.getElementById("startScanBtn").style.display = "none";
+    document.getElementById("stopScanBtn").style.display = "";
+    requestAnimationFrame(tick);
+  } catch (err) {
+    alert(t("qr.scanOpenFail") + err.message);
+  }
+}
+
+function stopScan() {
+  scanning = false;
+  if (scanStream) {
+    scanStream.getTracks().forEach((tr) => tr.stop());
+    scanStream = null;
+  }
+  const video = document.getElementById("scanVideo");
+  if (video) {
+    video.style.display = "none";
+    video.srcObject = null;
+  }
+  document.getElementById("startScanBtn").style.display = "";
+  document.getElementById("stopScanBtn").style.display = "none";
+}
+
+// 逐帧识别二维码
+function tick() {
+  if (!scanning) return;
+  const video = document.getElementById("scanVideo");
+  if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+    requestAnimationFrame(tick);
+    return;
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const code = window.jsQR(img.data, canvas.width, canvas.height);
+  if (code && code.data) {
+    stopScan();
+    handleScanned(code.data);
+    return;
+  }
+  requestAnimationFrame(tick);
+}
+
+// 处理扫描结果（二维码内容为 JSON）
+async function handleScanned(raw) {
+  const box = document.getElementById("scanResult");
+  let payload;
+  try {
+    payload = JSON.parse(raw);
+  } catch (e) {
+    // 不是 JSON 时按纯学号处理
+    payload = { studentId: raw.trim() };
+  }
+  if (!payload.studentId) {
+    box.innerHTML = `<div class="empty">${t("qr.notFound")}</div>`;
+    return;
+  }
+
+  // 查询该学生的报名记录
+  const conditions = [where("studentId", "==", payload.studentId)];
+  if (payload.eventId) conditions.push(where("eventId", "==", payload.eventId));
+  const snap = await getDocs(query(collection(db, "applications"), ...conditions));
+  let app = null;
+  snap.forEach((d) => {
+    if (!app) app = { id: d.id, ...d.data() };
+  });
+
+  if (!app) {
+    box.innerHTML = `<div class="empty">${t("qr.notFound")}</div>`;
+    return;
+  }
+  if (app.applyStatus === "已取消") {
+    box.innerHTML = `<div class="empty">${t("status.cancelled")}</div>`;
+    return;
+  }
+
+  const entered = app.entryStatus === "已入场";
+  box.className = "scan-result";
+  box.innerHTML = `
+    <p><b>${t("qr.scanResultTitle")}</b></p>
+    <p>${t("col.studentName")}：${esc(app.studentName || "-")}（${esc(app.studentId)}）</p>
+    <p>${t("hist.col.eventName")}：${esc(app.eventName || "-")}</p>
+    <p>${t("col.entryStatus")}：<span class="badge ${entered ? "badge-green" : "badge-orange"}">${entered ? t("status.entered") : t("status.notEntered")}</span></p>
+    ${entered
+      ? `<p class="form-success">${t("qr.alreadyEntered")}</p>`
+      : `<button class="btn btn-success btn-sm" id="scanConfirmBtn">${t("action.confirmEntry")}</button>`}`;
+
+  if (!entered) {
+    document.getElementById("scanConfirmBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("scanConfirmBtn");
+      btn.disabled = true;
+      btn.textContent = t("action.processing");
+      try {
+        await updateDoc(doc(db, "applications", app.id), { entryStatus: "已入场" });
+        alert(t("qr.enteredOk"));
+        refreshTable();
+        handleScanned(raw); // 刷新显示状态
+      } catch (err) {
+        alert(t("common.error") + err.message);
+        btn.disabled = false;
+        btn.textContent = t("action.confirmEntry");
+      }
+    });
+  }
+}
+
 // ---------------- 管理员视图：确认入场 ----------------
 async function renderAdmin() {
   document.getElementById("pageSub").textContent = t("qr.subAdmin");
@@ -130,6 +262,19 @@ async function renderAdmin() {
   }
 
   document.getElementById("loading").style.display = "none";
+
+  // 显示扫码区域并绑定事件
+  document.getElementById("scanCard").style.display = "block";
+  document.getElementById("startScanBtn").addEventListener("click", startScan);
+  document.getElementById("stopScanBtn").addEventListener("click", stopScan);
+  document.getElementById("manualBtn").addEventListener("click", () => {
+    const raw = document.getElementById("manualQr").value.trim();
+    if (!raw) return;
+    handleScanned(raw);
+  });
+  // 离开页面时关闭摄像头
+  window.addEventListener("beforeunload", stopScan);
+
   const card = document.getElementById("adminCard");
   const select = document.getElementById("eventSelect");
   select.innerHTML = events
@@ -207,6 +352,7 @@ async function renderAdmin() {
 
   select.addEventListener("change", showTable);
   document.getElementById("refreshBtn").addEventListener("click", showTable);
+  refreshTable = showTable; // 扫码确认入场后同步刷新列表
   showTable();
 }
 

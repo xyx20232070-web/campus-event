@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>qr.title.tag</title>
   <link rel="stylesheet" href="css/style.css">
+  <!-- 二维码识别组件（jsQR），离线时自动改用手动输入 -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -19,6 +21,26 @@
     <p class="page-sub" id="pageSub"></p>
 
     <div class="loading" id="loading"></div>
+
+    <!-- 管理员：扫描入场码 -->
+    <div class="card" id="scanCard" style="display:none">
+      <h3 data-i18n="qr.scanTitle" style="margin-bottom:12px"></h3>
+      <div class="scanner-box">
+        <video id="scanVideo" playsinline muted autoplay style="display:none"></video>
+        <p class="scanner-tip" data-i18n="qr.scanHint"></p>
+        <div class="actions" style="justify-content:center">
+          <button class="btn btn-primary btn-sm" id="startScanBtn" data-i18n="qr.scan"></button>
+          <button class="btn btn-outline btn-sm" id="stopScanBtn" style="display:none" data-i18n="qr.scanStop"></button>
+        </div>
+        <div id="scanResult"></div>
+      </div>
+      <hr style="border:none;border-top:1px solid #e9ecef;margin:16px 0">
+      <div class="form-group">
+        <label for="manualQr" data-i18n="qr.manualTitle"></label>
+        <input id="manualQr" data-i18n-ph="qr.manualPh">
+      </div>
+      <button class="btn btn-outline btn-sm" id="manualBtn" data-i18n="qr.manualParse"></button>
+    </div>
 
     <!-- 学生：我的 QR 码 -->
     <div class="card" id="studentQrCard" style="display:none">
