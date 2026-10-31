@@ -36,6 +36,77 @@ async function getUsers() {
   return list;
 }
 
+let allUsers = []; // 缓存已加载的账号，供导出与批量重置使用
+
+// ---------------- 导出账号列表（CSV） ----------------
+document.getElementById("exportBtn").addEventListener("click", () => {
+  if (allUsers.length === 0) {
+    alert(t("users.empty"));
+    return;
+  }
+  const header = [
+    t("col.studentId"), t("col.studentName"), t("users.phone"),
+    t("users.col.role"), t("login.password"), t("users.col.pwdStatus")
+  ];
+  const rows = allUsers.map((u) => [
+    u.userId, u.name, u.phone || "-",
+    u.role === "admin" ? t("role.admin") : t("role.student"),
+    u.password,
+    u.role === "admin" ? "-" : (u.mustChangePassword ? t("users.pwdNotChanged") : t("users.pwdChanged"))
+  ]);
+  // CSV 转义：含逗号/引号时用引号包裹并转义内部引号
+  const escCsv = (v) => {
+    const s = String(v ?? "");
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const csv = [header, ...rows].map((r) => r.map(escCsv).join(",")).join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "accounts_" + new Date().toISOString().slice(0, 10) + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  alert(t("users.exportDone"));
+});
+
+// ---------------- 全部重置为初始密码 ----------------
+document.getElementById("resetAllBtn").addEventListener("click", async () => {
+  if (allUsers.length === 0) {
+    alert(t("users.empty"));
+    return;
+  }
+  const btn = document.getElementById("resetAllBtn");
+  const pwd = prompt(t("users.resetAllMsg"), "123456");
+  if (pwd === null) return;
+  if (String(pwd).length < 6) {
+    alert(t("users.pwdLenErr"));
+    return;
+  }
+  if (!confirm(t("users.resetAllConfirm", { n: allUsers.length, pwd: pwd }))) return;
+
+  btn.disabled = true;
+  const oldText = btn.textContent;
+  btn.textContent = t("action.processing");
+  let ok = 0;
+  try {
+    for (const u of allUsers) {
+      await updateDoc(doc(db, "users", u.id), {
+        password: pwd,
+        mustChangePassword: u.role === "student"
+      });
+      ok += 1;
+    }
+    alert(t("users.resetAllOk", { n: ok, pwd: pwd }));
+    loadTable();
+  } catch (err) {
+    alert(t("users.resetFail") + err.message);
+  }
+  btn.disabled = false;
+  btn.textContent = oldText;
+});
+
 // ---------------- 录入新学生账号 ----------------
 document.getElementById("addUserForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -103,6 +174,7 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
 // ---------------- 账号列表 + 重置密码 ----------------
 async function loadTable() {
   const users = await getUsers();
+  allUsers = users; // 缓存，供导出与批量重置使用
   document.getElementById("userLoading").style.display = "none";
   const box = document.getElementById("userTable");
 
