@@ -271,31 +271,25 @@ export function initNav(active) {
   add("events", "events.html", t("nav.events"));
   add("qr", "qr.html", t("nav.qr"));
 
-  // 右上角纵向排列：返回键，下方为功能菜单（管理员）或退出登录（学生）
-  let rightCol;
-  if (u.role === "admin") {
-    rightCol = `
+  // 右上角纵向排列：返回键，下方为紫色下拉功能菜单（含退出登录）
+  const menuItems =
+    (u.role === "admin"
+      ? `<a href="add-event.html">${t("nav.publish")}</a>
+         <a href="users.html">${t("nav.accounts")}</a>`
+      : "") +
+    `<a href="bind-phone.html">${t("nav.bindPhone")}</a>`;
+  const rightCol = `
       <div class="nav-right-col">
         <button class="btn btn-outline btn-sm back-btn" id="backBtn">${t("action.backPrev")}</button>
         ${langSwitchHTML()}
         <div class="nav-menu">
           <button type="button" class="nav-menu-btn" id="menuBtn">${t("nav.menu")} ▾</button>
           <div class="nav-menu-list" id="menuList">
-            <a href="add-event.html">${t("nav.publish")}</a>
-            <a href="users.html">${t("nav.accounts")}</a>
-            <a href="bind-phone.html">${t("nav.bindPhone")}</a>
+            ${menuItems}
             <button type="button" id="btnLogout">${t("action.logout")}</button>
           </div>
         </div>
       </div>`;
-  } else {
-    rightCol = `
-      <div class="nav-right-col">
-        <button class="btn btn-outline btn-sm back-btn" id="backBtn">${t("action.backPrev")}</button>
-        ${langSwitchHTML()}
-        <button class="btn btn-outline btn-sm" id="btnLogout">${t("action.logout")}</button>
-      </div>`;
-  }
   // 学生的专属入口仍以链接形式展示
   if (u.role === "student") {
     add("history", "history.html", t("nav.records"));

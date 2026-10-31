@@ -13,7 +13,7 @@ import { isValidPhone, normalizePhone, sendCode, verifyCode } from "./sms.js";
 
 document.title = t("bp.title.tag");
 
-const me = requireRole("admin"); // 仅管理员可访问
+const me = requireRole(); // 管理员与学生均可访问
 initNav("bindPhone");
 
 let users = [];        // 全部账号
@@ -44,10 +44,14 @@ function countdown(btn) {
 }
 
 // ---------------- 载入账号列表 ----------------
+// 管理员可操作全部账号；学生只能操作自己的账号
 async function loadAccounts() {
   const snap = await getDocs(collection(db, "users"));
   users = [];
   snap.forEach((d) => users.push({ id: d.id, ...d.data() }));
+  if (me.role === "student") {
+    users = users.filter((u) => u.userId === me.userId);
+  }
   users.sort((a, b) => (a.userId || "").localeCompare(b.userId || ""));
 
   const select = document.getElementById("accountSelect");
@@ -66,6 +70,10 @@ async function loadAccounts() {
     const hit = users.find((u) => u.userId === preset);
     if (hit) select.value = hit.id;
   }
+  // 返回账号管理的入口只对管理员显示
+  document.getElementById("backToUsers").style.display =
+    me.role === "admin" ? "flex" : "none";
+
   select.addEventListener("change", pick);
   pick();
 }
