@@ -283,6 +283,7 @@ export function initNav(active) {
           <div class="nav-menu-list" id="menuList">
             <a href="add-event.html">${t("nav.publish")}</a>
             <a href="users.html">${t("nav.accounts")}</a>
+            <a href="bind-phone.html">${t("nav.bindPhone")}</a>
             <button type="button" id="btnLogout">${t("action.logout")}</button>
           </div>
         </div>

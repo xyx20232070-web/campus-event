@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bp.title.tag</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="events.html" data-i18n="app.name"></a>
+      <nav id="nav" class="nav"></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="page-title" data-i18n="bp.title"></h1>
+    <p class="page-sub" data-i18n="bp.sub"></p>
+
+    <!-- 选择账号 -->
+    <div class="card">
+      <div class="form-group">
+        <label for="accountSelect" data-i18n="bp.selectAccount"></label>
+        <select id="accountSelect"></select>
+      </div>
+      <div id="accountInfo"></div>
+    </div>
+
+    <!-- 第 1 步：验证原手机号（仅已绑定账号需要） -->
+    <div class="card" id="oldCard" style="display:none">
+      <h3 style="margin-bottom:12px" data-i18n="bp.stepVerifyOld"></h3>
+      <p id="oldPhoneTip"></p>
+      <div class="actions">
+        <button class="btn btn-outline btn-sm" id="sendOldCodeBtn" data-i18n="auth.sendCode"></button>
+      </div>
+      <div class="form-group mt">
+        <label for="oldCode" data-i18n="auth.codeLabel"></label>
+        <input id="oldCode" data-i18n-ph="auth.codePh" maxlength="6">
+      </div>
+      <button class="btn btn-primary btn-sm" id="verifyOldBtn" data-i18n="bp.verifyBtn"></button>
+      <p class="form-error" id="oldError"></p>
+      <p class="form-success" id="oldSuccess"></p>
+    </div>
+
+    <!-- 第 2 步：绑定新手机号 -->
+    <div class="card" id="newCard" style="display:none">
+      <h3 id="newTitle" style="margin-bottom:12px"></h3>
+      <div class="form-group">
+        <label for="newPhone" data-i18n="bp.newPhone"></label>
+        <input id="newPhone" type="tel" data-i18n-ph="auth.phonePh" maxlength="20">
+      </div>
+      <div class="actions">
+        <button class="btn btn-outline btn-sm" id="sendNewCodeBtn" data-i18n="auth.sendCode"></button>
+      </div>
+      <div class="form-group mt">
+        <label for="newCode" data-i18n="auth.codeLabel"></label>
+        <input id="newCode" data-i18n-ph="auth.codePh" maxlength="6">
+      </div>
+      <button class="btn btn-primary btn-sm" id="bindBtn" data-i18n="bp.submit"></button>
+      <p class="form-error" id="bindError"></p>
+      <p class="form-success" id="bindSuccess"></p>
+    </div>
+
+    <div class="actions mt">
+      <a class="btn btn-outline" href="users.html" data-i18n="nav.accounts"></a>
+    </div>
+  </main>
+
+  <script type="module" src="js/bind-phone.js"></script>
+</body>
+</html>
