@@ -7,7 +7,7 @@
 // ==========================================================
 import {
   db, collection, doc, getDocs, updateDoc,
-  query, where, requireRole, initNav, qrImageUrl
+  query, where, requireRole, initNav, qrImageUrl, errMsg
 } from "./firebase.js";
 import { t } from "./i18n.js";
 
@@ -241,7 +241,7 @@ async function handleScanned(raw) {
         refreshTable();
         handleScanned(raw); // 刷新显示状态
       } catch (err) {
-        alert(t("common.error") + err.message);
+        alert(errMsg(err));
         btn.disabled = false;
         btn.textContent = t("action.confirmEntry");
       }
@@ -342,7 +342,7 @@ async function renderAdmin() {
           alert(t("qr.enteredOk"));
           showTable();
         } catch (err) {
-          alert(t("common.error") + err.message);
+          alert(errMsg(err));
           btn.disabled = false;
           btn.textContent = t("action.confirmEntry");
         }
@@ -358,5 +358,5 @@ async function renderAdmin() {
 
 // 根据角色加载对应视图
 (user.role === "admin" ? renderAdmin() : renderStudent()).catch((err) => {
-  document.getElementById("loading").textContent = t("common.error") + err.message;
+  document.getElementById("loading").textContent = errMsg(err);
 });

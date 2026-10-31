@@ -5,7 +5,7 @@
 // ==========================================================
 import {
   db, collection, doc, getDocs, addDoc, updateDoc,
-  query, where, requireRole, initNav
+  query, where, requireRole, initNav, errMsg
 } from "./firebase.js";
 import { t } from "./i18n.js";
 import { isValidPhone, normalizePhone } from "./sms.js";
@@ -244,5 +244,5 @@ async function loadTable() {
 }
 
 loadTable().catch((err) => {
-  document.getElementById("userLoading").textContent = t("common.error") + err.message;
+  document.getElementById("userLoading").textContent = errMsg(err);
 });

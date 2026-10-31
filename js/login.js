@@ -2,7 +2,9 @@
 // js/login.js —— 1号负责：登录页面逻辑（支持中韩双语）
 // 功能：两种登录方式 —— 学号/密码登录、手机号验证码登录
 // ==========================================================
-import { db, collection, query, where, getDocs, isDemo, setSession } from "./firebase.js";
+import {
+  db, collection, query, where, getDocs, isDemo, setSession, isCloudBlocked, errMsg
+} from "./firebase.js";
 import { t } from "./i18n.js";
 import { isValidPhone, normalizePhone, sendCode, verifyCode, findUsersByPhone } from "./sms.js";
 
@@ -36,8 +38,8 @@ document.getElementById("roleSwitch").addEventListener("click", (e) => {
   role = btn.dataset.role;
 });
 
-// 演示模式提示
-if (isDemo) {
+// 演示模式提示（含云端被拒后自动降级的情况）
+if (isDemo || isCloudBlocked()) {
   document.getElementById("loginTip").innerHTML = t("login.demoTip");
 }
 
@@ -77,7 +79,7 @@ document.getElementById("sendCodeBtn").addEventListener("click", async () => {
     alert(t("auth.codeSent", { code: code })); // 演示环境直接展示验证码
     startCountdown();
   } catch (err) {
-    errorEl.textContent = t("login.fail") + err.message;
+    errorEl.textContent = errMsg(err);
     btn.disabled = false;
     btn.textContent = t("auth.sendCode");
   }
@@ -150,7 +152,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
       return;
     }
   } catch (err) {
-    errorEl.textContent = t("login.fail") + err.message;
+    errorEl.textContent = errMsg(err);
   }
 
   btn.disabled = false;

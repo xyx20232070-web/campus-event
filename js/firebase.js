@@ -26,10 +26,11 @@ export let db;
 export let collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDoc, getDocs;
 export let query, where, serverTimestamp;
 
-if (isDemo) {
-  // ---------------- 本地演示模式（localStorage 模拟 Firestore） ----------------
-  Object.assign(globalThis, {}); // 占位，保持模块结构清晰
-  const api = buildMockApi();
+// 云端不可用的原因（空字符串表示云端正常）
+let cloudBlockedReason = "";
+export function isCloudBlocked() { return !!cloudBlockedReason; }
+
+function assignApi(api) {
   db = api.db;
   collection = api.collection;
   doc = api.doc;
@@ -42,6 +43,21 @@ if (isDemo) {
   query = api.query;
   where = api.where;
   serverTimestamp = api.serverTimestamp;
+}
+
+// 是否为“安全规则拒绝访问 / 测试模式规则过期”类错误
+function isPermissionError(e) {
+  const msg = String((e && e.message) || "").toLowerCase();
+  return (
+    e && (e.code === "permission-denied" || e.code === 403) ||
+    msg.includes("permission") ||
+    msg.includes("insufficient")
+  );
+}
+
+if (isDemo) {
+  // ---------------- 本地演示模式（localStorage 模拟 Firestore） ----------------
+  assignApi(buildMockApi());
 } else {
   // ---------------- 真实 Firebase Cloud Firestore ----------------
   const appMod = await import(
@@ -51,18 +67,54 @@ if (isDemo) {
     "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
   );
   const app = appMod.initializeApp(firebaseConfig);
-  db = fsMod.getFirestore(app);
-  collection = fsMod.collection;
-  doc = fsMod.doc;
-  addDoc = fsMod.addDoc;
-  setDoc = fsMod.setDoc;
-  updateDoc = fsMod.updateDoc;
-  deleteDoc = fsMod.deleteDoc;
-  getDoc = fsMod.getDoc;
-  getDocs = fsMod.getDocs;
-  query = fsMod.query;
-  where = fsMod.where;
-  serverTimestamp = fsMod.serverTimestamp;
+  const realDb = fsMod.getFirestore(app);
+  const realApi = {
+    db: realDb,
+    collection: fsMod.collection,
+    doc: fsMod.doc,
+    addDoc: fsMod.addDoc,
+    setDoc: fsMod.setDoc,
+    updateDoc: fsMod.updateDoc,
+    deleteDoc: fsMod.deleteDoc,
+    getDoc: fsMod.getDoc,
+    getDocs: fsMod.getDocs,
+    query: fsMod.query,
+    where: fsMod.where,
+    serverTimestamp: fsMod.serverTimestamp
+  };
+  try {
+    // 健康检查：在页面业务代码执行前先读一次 users，
+    // 若被云端拒绝（安全规则过期等），自动降级为本地演示模式，保证系统可用
+    await fsMod.getDocs(fsMod.query(fsMod.collection(realDb, "users")));
+    assignApi(realApi);
+  } catch (e) {
+    if (isPermissionError(e)) {
+      cloudBlockedReason = t("common.errPermission");
+      assignApi(buildMockApi());
+      showCloudBanner();
+    } else {
+      assignApi(realApi); // 网络等其他问题仍保持云端模式，由页面显示友好提示
+    }
+  }
+}
+
+// 降级提示条
+function showCloudBanner() {
+  if (!document.body) return;
+  const el = document.createElement("div");
+  el.className = "cloud-banner";
+  el.textContent = t("common.cloudBanner", { reason: cloudBlockedReason });
+  document.body.prepend(el);
+}
+
+// 把各类报错翻译成易懂的中韩双语提示
+export function errMsg(err) {
+  const msg = String((err && err.message) || err || "");
+  if (isPermissionError(err)) return t("common.errPermission");
+  if (/network|offline|unavailable|failed to fetch|networkerror/i.test(msg)) {
+    return t("common.errNetwork");
+  }
+  return t("common.error") + msg;
 }
 
 // ----------------------------------------------------------

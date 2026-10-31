@@ -5,7 +5,7 @@
 // ==========================================================
 import {
   db, collection, getDocs, isDemo,
-  requireRole, initNav
+  requireRole, initNav, errMsg
 } from "./firebase.js";
 import { t } from "./i18n.js";
 
@@ -87,5 +87,5 @@ function esc(s) {
 }
 
 loadEvents().catch((err) => {
-  document.getElementById("loading").textContent = t("common.error") + err.message;
+  document.getElementById("loading").textContent = errMsg(err);
 });

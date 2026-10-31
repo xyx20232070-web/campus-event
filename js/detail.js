@@ -5,7 +5,7 @@
 // ==========================================================
 import {
   db, collection, doc, getDoc, getDocs, addDoc,
-  query, where, requireRole, initNav
+  query, where, requireRole, initNav, errMsg
 } from "./firebase.js";
 import { t } from "./i18n.js";
 
@@ -149,4 +149,4 @@ function esc(s) {
   }[c]));
 }
 
-load().catch((err) => showError(t("common.error") + err.message));
+load().catch((err) => showError(errMsg(err)));

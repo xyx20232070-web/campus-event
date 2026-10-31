@@ -236,6 +236,16 @@ tr:hover td { background: #f8f9fa; }
   margin-bottom: 16px;
 }
 
+/* ---------- 云端不可用降级提示条 ---------- */
+.cloud-banner {
+  background: #fff3bf;
+  color: #7a4c00;
+  border-bottom: 1px solid #ffe066;
+  padding: 8px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 /* ---------- 语言切换 ---------- */
 .lang-switch { display: flex; gap: 4px; margin-left: 8px; }
 .lang-switch button {
