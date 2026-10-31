@@ -19,25 +19,52 @@
     <h1 class="login-title" data-i18n="app.name"></h1>
     <p class="login-sub" data-i18n="login.sub"></p>
 
+    <!-- 登录方式切换：密码登录 / 手机号验证码登录 -->
+    <div class="role-switch" id="modeSwitch">
+      <button type="button" class="role-btn active" data-mode="password" data-i18n="auth.tabPwd"></button>
+      <button type="button" class="role-btn" data-mode="code" data-i18n="auth.tabCode"></button>
+    </div>
+
+    <!-- 角色切换（仅密码登录时需要选择） -->
     <div class="role-switch" id="roleSwitch">
       <button type="button" class="role-btn active" data-role="student" data-i18n="login.asStudent"></button>
       <button type="button" class="role-btn" data-role="admin" data-i18n="login.asAdmin"></button>
     </div>
 
     <form id="loginForm">
-      <div class="form-group">
-        <label for="userId" data-i18n="login.userId"></label>
-        <input id="userId" data-i18n-ph="login.userIdPh" required autocomplete="username">
+      <!-- 密码登录 -->
+      <div id="pwdFields">
+        <div class="form-group">
+          <label for="userId" data-i18n="login.userId"></label>
+          <input id="userId" data-i18n-ph="login.userIdPh" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password" data-i18n="login.password"></label>
+          <input id="password" type="password" data-i18n-ph="login.passwordPh" autocomplete="current-password">
+        </div>
       </div>
-      <div class="form-group">
-        <label for="password" data-i18n="login.password"></label>
-        <input id="password" type="password" data-i18n-ph="login.passwordPh" required autocomplete="current-password">
+
+      <!-- 手机号验证码登录 -->
+      <div id="codeFields" style="display:none">
+        <div class="form-group">
+          <label for="phone" data-i18n="auth.phoneLabel"></label>
+          <input id="phone" type="tel" data-i18n-ph="auth.phonePh" autocomplete="tel">
+        </div>
+        <div class="form-group">
+          <label for="smsCode" data-i18n="auth.codeLabel"></label>
+          <div class="actions">
+            <input id="smsCode" data-i18n-ph="auth.codePh" style="flex:1" maxlength="6">
+            <button type="button" class="btn btn-outline" id="sendCodeBtn" data-i18n="auth.sendCode"></button>
+          </div>
+        </div>
       </div>
+
       <p class="form-error" id="loginError"></p>
       <button type="submit" class="btn btn-primary btn-block" id="loginBtn" data-i18n="login.submit"></button>
     </form>
 
     <p class="login-tip" id="loginTip"></p>
+    <p class="login-tip"><a href="register.html" data-i18n="login.registerLink"></a></p>
   </div>
 
   <script type="module" src="js/login.js"></script>

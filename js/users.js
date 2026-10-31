@@ -8,6 +8,7 @@ import {
   query, where, requireRole, initNav
 } from "./firebase.js";
 import { t } from "./i18n.js";
+import { isValidPhone, normalizePhone } from "./sms.js";
 
 document.title = t("users.title.tag");
 
@@ -48,9 +49,14 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
   const name = document.getElementById("newUserName").value.trim();
   const password = document.getElementById("initPassword").value;
   const role = document.getElementById("newUserRole").value; // student / admin
+  const phone = document.getElementById("newUserPhone").value.trim();
 
   if (password.length < 6) {
     errEl.textContent = t("users.pwdLenErr");
+    return;
+  }
+  if (!isValidPhone(phone)) {
+    errEl.textContent = t("auth.phoneInvalid");
     return;
   }
 
@@ -61,8 +67,14 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
     const snap = await getDocs(
       query(collection(db, "users"), where("userId", "==", userId))
     );
+    // 手机号查重（手机号必须唯一，用于验证码登录）
+    const phoneSnap = await getDocs(
+      query(collection(db, "users"), where("phone", "==", normalizePhone(phone)))
+    );
     if (!snap.empty) {
       errEl.textContent = t("users.exists", { id: userId });
+    } else if (!phoneSnap.empty) {
+      errEl.textContent = t("reg.phoneExists");
     } else {
       // 新增 users 文档：
       // 学生账号强制首次登录改密；管理员账号无需强制改密
@@ -71,6 +83,7 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
         name: name,
         role: role,
         password: password,
+        phone: normalizePhone(phone), // 绑定手机号
         mustChangePassword: role === "student",
         createdBy: user.userId,
         createdAt: new Date().toISOString()
@@ -101,7 +114,7 @@ async function loadTable() {
   box.innerHTML = `
     <table>
       <thead>
-        <tr><th>${t("col.studentId")}</th><th>${t("col.studentName")}</th><th>${t("users.col.role")}</th><th>${t("users.col.pwdStatus")}</th><th>${t("col.action")}</th></tr>
+        <tr><th>${t("col.studentId")}</th><th>${t("col.studentName")}</th><th>${t("users.phone")}</th><th>${t("users.col.role")}</th><th>${t("users.col.pwdStatus")}</th><th>${t("col.action")}</th></tr>
       </thead>
       <tbody>
         ${users
@@ -111,6 +124,7 @@ async function loadTable() {
           <tr>
             <td>${esc(u.userId)}</td>
             <td>${esc(u.name)}</td>
+            <td>${esc(u.phone || "-")}</td>
             <td><span class="badge ${u.role === "admin" ? "badge-blue" : "badge-gray"}">${u.role === "admin" ? t("role.admin") : t("role.student")}</span></td>
             <td>${
               u.role === "admin"

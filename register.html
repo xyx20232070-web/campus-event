@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reg.title.tag</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+  <!-- 中韩语言切换 -->
+  <div class="login-lang">
+    <div class="lang-switch on-light">
+      <button type="button" data-lang-btn="zh">中</button>
+      <button type="button" data-lang-btn="ko">한</button>
+    </div>
+  </div>
+
+  <div class="login-card card">
+    <h1 class="login-title" data-i18n="reg.title"></h1>
+    <p class="login-sub" data-i18n="reg.sub"></p>
+
+    <form id="regForm">
+      <div class="form-group">
+        <label for="regId" data-i18n="reg.id"></label>
+        <input id="regId" data-i18n-ph="reg.idPh" required maxlength="20" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="regName" data-i18n="reg.name"></label>
+        <input id="regName" data-i18n-ph="reg.namePh" required maxlength="20">
+      </div>
+      <div class="form-group">
+        <label for="regPhone" data-i18n="reg.phone"></label>
+        <input id="regPhone" type="tel" data-i18n-ph="reg.phonePh" required maxlength="20" autocomplete="tel">
+      </div>
+      <div class="form-group">
+        <label for="regCode" data-i18n="reg.code"></label>
+        <div class="actions">
+          <input id="regCode" data-i18n-ph="reg.codePh" required maxlength="6" style="flex:1">
+          <button type="button" class="btn btn-outline" id="sendCodeBtn" data-i18n="auth.sendCode"></button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="regPassword" data-i18n="reg.password"></label>
+        <input id="regPassword" type="password" data-i18n-ph="reg.passwordPh" required minlength="6" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label for="regConfirm" data-i18n="reg.confirmPwd"></label>
+        <input id="regConfirm" type="password" data-i18n-ph="reg.confirmPwdPh" required minlength="6" autocomplete="new-password">
+      </div>
+      <p class="form-error" id="regError"></p>
+      <p class="form-success" id="regSuccess"></p>
+      <button type="submit" class="btn btn-primary btn-block" id="regBtn" data-i18n="reg.submit"></button>
+    </form>
+
+    <p class="login-tip"><a href="index.html" data-i18n="reg.goLogin"></a></p>
+  </div>
+
+  <script type="module" src="js/register.js"></script>
+</body>
+</html>
