@@ -275,9 +275,9 @@ export function initNav(active) {
   const menuItems =
     (u.role === "admin"
       ? `<a href="add-event.html">${t("nav.publish")}</a>
-         <a href="users.html">${t("nav.accounts")}</a>
-         <a href="security-code.html">${t("nav.securityCode")}</a>`
-      : "");
+         <a href="users.html">${t("nav.accounts")}</a>`
+      : "") +
+    `<a href="security-code.html">${t("nav.securityCode")}</a>`;
   const rightCol = `
       <div class="nav-right-col">
         <button class="btn btn-outline btn-sm back-btn" id="backBtn">${t("action.backPrev")}</button>

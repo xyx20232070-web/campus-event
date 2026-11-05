@@ -1,8 +1,9 @@
 // ==========================================================
-// js/security-code.js —— 安全验证卡（管理员）
-// 为每个账号生成一张 10×10 口令卡：001~100 随机排列，
-// 每个账号的排列顺序各不相同，保存在该账号的 users 文档中。
-// 学生在「找回密码」页面按随机坐标 (行, 列) 输入对应数字即可验证身份。
+// js/security-code.js —— 安全验证卡
+// 管理员：为任意账号生成 / 重新生成 10×10 口令卡；
+// 学生：只能查看自己账号的口令卡（不能生成）。
+// 口令卡为 001~100 的随机排列，每个账号顺序各不相同，
+// 学生在「找回密码」页面按随机坐标 (行, 列) 输入对应数字验证身份。
 // ==========================================================
 import {
   db, collection, doc, getDocs, updateDoc,
@@ -18,7 +19,7 @@ function esc(s) {
 
 document.title = t("sc.title.tag");
 
-requireRole("admin"); // 仅管理员可生成 / 查看口令卡
+const me = requireRole(); // 管理员与学生均可访问
 initNav("securityCode");
 
 let users = [];     // 全部账号
@@ -35,11 +36,19 @@ function genCard() {
 }
 
 // ---------------- 载入账号列表 ----------------
+// 管理员：可选任意账号；学生：仅自己的账号，且隐藏发卡操作
 async function loadAccounts() {
   const snap = await getDocs(collection(db, "users"));
   users = [];
   snap.forEach((d) => users.push({ id: d.id, ...d.data() }));
+  if (me.role === "student") {
+    users = users.filter((u) => u.userId === me.userId);
+  }
   users.sort((a, b) => (a.userId || "").localeCompare(b.userId || ""));
+
+  // 管理面板（选人 + 发卡）仅管理员可见
+  const isAdmin = me.role === "admin";
+  document.getElementById("adminPanel").style.display = isAdmin ? "block" : "none";
 
   const select = document.getElementById("accountSelect");
   select.innerHTML = users
@@ -84,9 +93,19 @@ function pick() {
     genBtn.textContent = t("sc.regen");
   } else {
     tableEl.innerHTML = "";
-    wrap.style.display = "none";
-    genBtn.textContent = t("sc.gen");
+    if (isAdmin()) {
+      wrap.style.display = "none";
+      genBtn.textContent = t("sc.gen");
+    } else {
+      // 学生：管理员还没发卡
+      tableEl.innerHTML = `<div class="empty">${t("sc.noCardYet")}</div>`;
+      wrap.style.display = "block";
+    }
   }
+}
+
+function isAdmin() {
+  return me.role === "admin";
 }
 
 // ---------------- 生成 / 重新生成口令卡 ----------------
