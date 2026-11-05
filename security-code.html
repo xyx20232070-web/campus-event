@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sc.title.tag</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="events.html" data-i18n="app.name"></a>
+      <nav id="nav" class="nav"></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="page-title" data-i18n="sc.title"></h1>
+    <p class="page-sub" data-i18n="sc.sub"></p>
+
+    <div class="card">
+      <div class="form-group">
+        <label for="accountSelect" data-i18n="sc.selectAccount"></label>
+        <select id="accountSelect"></select>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary btn-sm" id="genBtn" data-i18n="sc.gen"></button>
+      </div>
+      <p class="form-error" id="scError"></p>
+      <p class="form-success" id="scSuccess"></p>
+    </div>
+
+    <div class="card" id="cardWrap" style="display:none">
+      <h3 style="margin-bottom:12px" data-i18n="sc.cardTitle"></h3>
+      <div class="table-wrap" id="cardTable"></div>
+    </div>
+
+    <div class="card">
+      <p data-i18n="sc.hint"></p>
+    </div>
+  </main>
+
+  <script type="module" src="js/security-code.js"></script>
+</body>
+</html>

@@ -246,6 +246,33 @@ tr:hover td { background: #f8f9fa; }
   line-height: 1.6;
 }
 
+/* ---------- 安全验证卡 ---------- */
+.sc-table th,
+.sc-table td {
+  border: 1px solid #dee2e6;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 13px;
+}
+.sc-table thead th,
+.sc-table tbody th:first-child {
+  background: #f1f3f5;
+  font-weight: 700;
+}
+.sc-table td {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+.coord-tip {
+  background: #eef1fb;
+  border: 1.5px solid #c3cdf2;
+  color: var(--primary);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
 /* ---------- 语言切换 ---------- */
 .lang-switch { display: flex; gap: 4px; margin-left: 8px; }
 .lang-switch button {
