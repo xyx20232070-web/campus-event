@@ -131,9 +131,9 @@ function buildMockApi() {
     }
     const seed = {
       users: [
-        { userId: "A001", password: "admin123", name: "王老师", role: "admin", phone: "13800000001" },
-        { userId: "S001", password: "123456", name: "李同学", role: "student", phone: "13800000002" },
-        { userId: "S002", password: "123456", name: "张同学", role: "student", phone: "13800000003" }
+        { userId: "A001", password: "admin123", name: "王老师", role: "admin" },
+        { userId: "S001", password: "123456", name: "李同学", role: "student" },
+        { userId: "S002", password: "123456", name: "张同学", role: "student" }
       ],
       events: [
         { name: "Python 编程入门讲座", date: "2026-10-12", time: "14:00", place: "第一教学楼 301", maxPeople: 50, description: "面向零基础同学的 Python 编程讲座，内容包括环境搭建、基础语法和一个小案例演示。", createdAt: now() },
@@ -276,8 +276,7 @@ export function initNav(active) {
     (u.role === "admin"
       ? `<a href="add-event.html">${t("nav.publish")}</a>
          <a href="users.html">${t("nav.accounts")}</a>`
-      : "") +
-    `<a href="bind-phone.html">${t("nav.bindPhone")}</a>`;
+      : "");
   const rightCol = `
       <div class="nav-right-col">
         <button class="btn btn-outline btn-sm back-btn" id="backBtn">${t("action.backPrev")}</button>
