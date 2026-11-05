@@ -337,6 +337,17 @@ export function qrImageUrl(payload) {
     encodeURIComponent(payload)
   );
 }
+
+// 生成安全验证卡：001~100 的随机排列（Fisher-Yates 洗牌）
+// 每个账号一张、顺序各不相同，用于找回密码时的坐标验证
+export function genSecurityCard() {
+  const nums = Array.from({ length: 100 }, (_, i) => String(i + 1).padStart(3, "0"));
+  for (let i = nums.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [nums[i], nums[j]] = [nums[j], nums[i]];
+  }
+  return nums;
+}
 // 格式化 Firestore 时间戳或字符串
 export function fmtTime(v) {
   if (!v) return "-";

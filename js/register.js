@@ -2,7 +2,7 @@
 // js/register.js —— 学生自助注册
 // 功能：学号 / 姓名 / 密码 → 查重 → 写入 users 集合
 // ==========================================================
-import { db, collection, query, where, getDocs, addDoc } from "./firebase.js";
+import { db, collection, query, where, getDocs, addDoc, genSecurityCard } from "./firebase.js";
 import { t } from "./i18n.js";
 
 document.title = t("reg.title.tag");
@@ -49,6 +49,7 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
       userId: userId,
       name: name,
       password: password,
+      securityCard: genSecurityCard(), // 自动生成专属安全验证卡
       role: "student",
       mustChangePassword: false,
       selfRegistered: true,

@@ -3,7 +3,8 @@
 // 功能：学号/管理员账号 + 密码登录，角色选择后跳转对应页面
 // ==========================================================
 import {
-  db, collection, query, where, getDocs, isDemo, setSession, isCloudBlocked, errMsg
+  db, collection, doc, query, where, getDocs, updateDoc,
+  isDemo, setSession, isCloudBlocked, errMsg, genSecurityCard
 } from "./firebase.js";
 import { t } from "./i18n.js";
 
@@ -45,7 +46,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
       const snap = await getDocs(
         query(collection(db, "users"), where("userId", "==", userId))
       );
-      snap.forEach((d) => (user = d.data()));
+      snap.forEach((d) => (user = { id: d.id, ...d.data() }));
       if (!user || user.password !== password) {
         errorEl.textContent = t("login.wrongErr");
         user = null;
@@ -58,6 +59,15 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     }
 
     if (user) {
+      // 老账号首次登录时自动补发专属安全验证卡（新账号在创建时已生成）
+      if (!user.securityCard) {
+        try {
+          await updateDoc(doc(db, "users", user.id), {
+            securityCard: genSecurityCard(),
+            securityCardAt: new Date().toISOString()
+          });
+        } catch (e) { /* 补发失败不阻塞登录 */ }
+      }
       setSession({
         userId: user.userId,
         name: user.name,

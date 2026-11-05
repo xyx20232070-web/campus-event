@@ -5,7 +5,7 @@
 // ==========================================================
 import {
   db, collection, doc, getDocs, addDoc, updateDoc,
-  query, where, requireRole, initNav, errMsg
+  query, where, requireRole, initNav, errMsg, genSecurityCard
 } from "./firebase.js";
 import { t } from "./i18n.js";
 
@@ -142,6 +142,7 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
         name: name,
         role: role,
         password: password,
+        securityCard: genSecurityCard(), // 自动生成专属安全验证卡
         mustChangePassword: role === "student",
         createdBy: user.userId,
         createdAt: new Date().toISOString()
