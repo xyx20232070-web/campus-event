@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fp.title.tag</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="events.html" data-i18n="app.name"></a>
+      <nav id="nav" class="nav"></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="page-title" data-i18n="fp.title"></h1>
+    <p class="page-sub" data-i18n="fp.sub"></p>
+
+    <div class="card">
+      <p id="fpStatus"></p>
+      <div class="actions">
+        <button class="btn btn-primary" id="enrollBtn" data-i18n="fp.enroll"></button>
+      </div>
+      <p class="form-error" id="fpError"></p>
+      <p class="form-success" id="fpSuccess"></p>
+    </div>
+
+    <div class="card">
+      <p data-i18n="fp.hint"></p>
+    </div>
+  </main>
+
+  <script type="module" src="js/fingerprint.js"></script>
+</body>
+</html>
